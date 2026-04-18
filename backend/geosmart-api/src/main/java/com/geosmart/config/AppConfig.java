@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ResourceLoader;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -14,23 +16,29 @@ import java.nio.file.Path;
 public class AppConfig {
 
     private static final Logger log = LoggerFactory.getLogger(AppConfig.class);
+    private static final String SAMPLE_DOCS_PATH = "classpath:sample-docs/";
 
     @Bean
-    public CommandLineRunner loadSampleDocuments(DocumentIngestionService ingestionService) {
+    public CommandLineRunner loadSampleDocuments(DocumentIngestionService ingestionService, ResourceLoader resourceLoader) {
         return args -> {
-            Path sampleDir = Path.of("src/main/resources/sample-docs");
-            if (Files.exists(sampleDir)) {
-                try (var stream = Files.list(sampleDir)) {
-                    stream.filter(Files::isRegularFile)
-                          .forEach(file -> {
-                              try {
-                                  ingestionService.ingestDocument(file);
-                                  log.info("Loaded sample document: {}", file.getFileName());
-                              } catch (Exception e) {
-                                  log.warn("Failed to load sample document: {}", file.getFileName(), e);
-                              }
-                          });
+            try {
+                org.springframework.core.io.Resource[] resources =
+                    new org.springframework.core.io.support.PathMatchingResourcePatternResolver()
+                        .getResources(SAMPLE_DOCS_PATH + "*");
+
+                for (org.springframework.core.io.Resource resource : resources) {
+                    if (resource.exists() && resource.isFile()) {
+                        try {
+                            Path file = Path.of(resource.getURI());
+                            ingestionService.ingestDocument(file);
+                            log.info("Loaded sample document: {}", file.getFileName());
+                        } catch (Exception e) {
+                            log.warn("Failed to load sample document: {}", resource.getFilename(), e);
+                        }
+                    }
                 }
+            } catch (IOException e) {
+                log.warn("Failed to access sample documents directory", e);
             }
         };
     }

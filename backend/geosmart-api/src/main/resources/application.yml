@@ -11,7 +11,7 @@ llm:
   provider: ${LLM_PROVIDER:zhipu}
   zhipu:
     base-url: https://open.bigmodel.cn/
-    api-key: ${ZHIPU_API_KEY:ca185773e1ce488d95ad25fee97f94c7.X4Hw6MxEIohk4IEp}
+    api-key: ${ZHIPU_API_KEY:}
     model-name: glm-4-flash
 
 rag:
