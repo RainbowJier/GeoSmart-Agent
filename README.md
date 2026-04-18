@@ -28,21 +28,29 @@
 
 ```
 GeoSmart-Agent/
-├── backend/                          # Spring Boot 后端
-│   └── src/main/java/com/geosmart/agent/
-│       ├── api/                      # REST 控制器（SSE 流式、文档上传）
-│       ├── chat/                     # AI 对话装配与配置
-│       ├── rag/                      # RAG 管道（文档摄入、向量化、检索）
-│       ├── agent/tools/              # @Tool 工具组件
-│       ├── llm/                      # 可插拔 LLM 提供商配置
-│       └── config/                   # 应用配置与示例数据加载
+├── backend/                          # Spring Boot 多模块后端
+│   ├── geosmart-llm/                 # LLM 提供商配置模块
+│   ├── geosmart-rag/                 # RAG 管道模块
+│   ├── geosmart-tools/               # Agent 工具模块
+│   ├── geosmart-chat/                # Chat 装配模块
+│   ├── geosmart-api/                 # REST API 模块（可执行 JAR）
+│   └── pom.xml                       # 父 POM 配置
 ├── frontend/                         # Vue 3 前端
 │   └── src/
 │       ├── views/ChatView.vue        # 聊天主界面
 │       ├── stores/chat.ts            # Pinia 状态管理
 │       └── api/chat.ts               # SSE 流式 API 客户端
+├── CLAUDE.md                         # Claude Code 工作指导
 └── README.md
 ```
+
+### 后端模块说明
+
+- **geosmart-llm**: LLM 提供商配置（支持智谱 GLM、DeepSeek、OpenAI）
+- **geosmart-rag**: RAG 检索增强生成（文档解析、向量化、检索）
+- **geosmart-tools**: Agent 工具集（法规检索、空间查询、业务状态查询）
+- **geosmart-chat**: Chat 服务装配（AiService、会话管理、工具集成）
+- **geosmart-api**: REST API 层（SSE 流式传输、文档上传、会话管理）
 
 ## 快速开始
 
@@ -71,8 +79,12 @@ llm:
 **1. 启动后端**
 
 ```bash
-cd backend
+cd backend/geosmart-api
 mvn spring-boot:run                  # 端口 8080
+
+# 或者使用可执行 JAR
+cd backend
+java -jar geosmart-api/target/geosmart-api-0.1.0-SNAPSHOT.jar
 ```
 
 **2. 启动前端**
@@ -90,28 +102,43 @@ npm run dev                          # 端口 5173，/api 代理至 localhost:80
 ## 架构
 
 ```
-Vue 3 (5173)  ──SSE/REST──▶  Spring Boot (8080)
-                                  ├── GeoSmartAssistant (@SystemMessage + AiService)
-                                  ├── ChatConfig (工具、RAG、会话装配)
-                                  ├── Agent Tools (法规/空间/业务)
-                                  ├── RAG Pipeline (解析→分块→向量化→检索)
-                                  └── LLM Provider (智谱/DeepSeek/OpenAI)
+Vue 3 (5173)  ──SSE/REST──▶  Spring Boot 多模块架构 (8080)
+                                  ├── geosmart-api (REST 控制器)
+                                  ├── geosmart-chat (AiService 装配)
+                                  ├── geosmart-tools (Agent 工具)
+                                  ├── geosmart-rag (RAG 管道)
+                                  └── geosmart-llm (LLM 提供商)
+```
+
+**模块依赖关系：**
+```
+geosmart-api
+  ├── geosmart-chat
+  │   ├── geosmart-tools
+  │   │   ├── geosmart-rag
+  │   │   │   └── geosmart-llm
+  │   │   └── geosmart-llm
+  │   └── geosmart-rag
+  └── geosmart-tools
 ```
 
 **核心集成点：**
-- `ChatConfig.java` — 装配 AiServices，注册工具、ContentRetriever、ChatMemoryProvider
-- `GeoSmartAssistant.java` — 定义系统提示词和 `chat()` 接口契约
+- `ChatConfig.java` (geosmart-chat) — 装配 AiServices，注册工具、ContentRetriever、ChatMemoryProvider
+- `GeoSmartAssistant.java` (geosmart-chat) — 定义系统提示词和 `chat()` 接口契约
+- `ChatController.java` (geosmart-api) — SSE 流式传输和 HTTP 请求处理
 - `ChatView.vue` — 前端聊天界面，通过 `ReadableStream` 解析 SSE 流式数据
 
 ## 常用命令
 
 ```bash
-# 后端
+# 后端（多模块构建）
 cd backend
-mvn compile                          # 编译
-mvn test                             # 运行全部测试
+mvn compile                          # 编译所有模块
+mvn test                             # 运行所有模块测试
 mvn test -Dtest=TestClassName        # 运行单个测试类
-mvn spring-boot:run                  # 启动开发服务器
+mvn spring-boot:run                  # 启动开发服务器（从 geosmart-api 模块）
+mvn clean install -DskipTests        # 完整构建并安装到本地仓库
+mvn clean package -DskipTests        # 打包可执行 JAR
 
 # 前端
 cd frontend
