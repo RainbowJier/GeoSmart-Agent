@@ -153,7 +153,7 @@ Answer: Hello! I am an intelligent assistant...
 
 4. **LLM Decision** (Model Trained for Function Calling)
    - LLM analyzes the request and tool descriptions
-   - Decides to call a tool based on semantic matching
+   - Decides to call a tool based on `semantic`[语义] matching
    - Outputs structured response:
    ```json
    {
