@@ -13,122 +13,93 @@ import java.util.Map;
 import java.util.Scanner;
 
 /**
- * Step 04: Agent 工具调用 — 让 LLM 调用你写的 Java 方法。
+ * Step 04: Agent Tool Invocation — Let LLM call your Java methods.
  * <p>
- * 核心概念：
- * - @Tool：标注一个方法为"工具"，LLM 可以调用它
- * - @P：描述参数含义，帮助 LLM 正确传参
- * - LLM 自动决定何时调用哪个工具（Function Calling）
+ * Core concepts:
+ * - @Tool: Mark a method as a "tool" that LLM can call
+ * - @P: Describe parameter meaning, help LLM pass parameters correctly
+ * - LLM automatically decides when to call which tool (Function Calling)
  * <p>
- * 工作流程：
- * 1. 用户问 "123 * 456 等于多少"
- * 2. LLM 判断需要调用 calculate 工具，输出：{ "a": 123, "operator": "*", "b": 456 }
- * 3. LangChain4j 框架自动调用 CalculatorTool.calculate(123, "*", 456)
- * 4. 返回值 "123.00 * 456.00 = 56088.00" 发回 LLM
- * 5. LLM 生成自然语言回答："123 乘以 456 等于 56088"
+ * Workflow:
+ * 1. User asks "What is 123 * 456"
+ * 2. LLM determines it needs to call calculate tool, outputs: { "a": 123, "operator": "*", "b": 456 }
+ * 3. LangChain4j framework automatically calls CalculatorTool.calculate(123, "*", 456)
+ * 4. Return value "123.00 * 456.00 = 56088.00" is sent back to LLM
+ * 5. LLM generates natural language answer: "123 multiplied by 456 equals 56088"
  */
 public class ToolDemo {
 
     @SystemMessage("""
-            你是一个智能助手，可以帮用户做计算和查询时间。
-            当用户问计算题时，使用计算器工具。
-            当用户问时间相关问题时，使用日期时间工具。
-            对于普通问题，直接回答即可。
+            You are an intelligent assistant that can help users with calculations and time queries.
+            When users ask calculation questions, use the calculator tool.
+            When users ask time-related questions, use the date time tool.
+            For normal questions, answer directly.
             """)
     interface ToolAssistant {
         String chat(String message);
     }
 
     public static void main(String[] args) {
-        // 1. 创建 ChatModel
-        ChatModel chatModel = createChatModel();
-        System.out.println("ChatModel 创建成功\n");
+         ChatModel chatModel = createChatModel();
+         System.out.println("ChatModel created successfully\n");
 
-        // 2. 创建工具实例
-        CalculatorTool calcTool = new CalculatorTool();
-        DateTimeTool dateTimeTool = new DateTimeTool();
+         // Create tool instances
+         CalculatorTool calcTool = new CalculatorTool();
+         DateTimeTool dateTimeTool = new DateTimeTool();
 
-        // 3. 组装 AiServices（关键：注册工具）
-        ToolAssistant assistant = AiServices.builder(ToolAssistant.class)
-                .chatModel(chatModel)
-                .tools(calcTool, dateTimeTool)   // ← 注册工具
-                .build();
-        System.out.println("AI 服务组装完成（已注册：CalculatorTool、DateTimeTool）\n");
+         // Assemble AiServices (key: register tools)
+         ToolAssistant assistant = AiServices.builder(ToolAssistant.class)
+                 .chatModel(chatModel)
+                 .tools(calcTool, dateTimeTool)   // ← Register tools
+                 .build();
 
-        // ===== 演示：触发工具调用 =====
-        System.out.println("=== 工具调用演示 ===\n");
+         // Demo 1: Calculator tool
+         System.out.println("[Demo 1] Trigger calculator tool");
+         String answer1 = assistant.chat("What is 123 * 456?");
+         System.out.println("Answer: " + answer1);
+         System.out.println();
 
-        // 演示 1：计算器工具
-        System.out.println("[演示 1] 触发计算器工具");
-        String answer1 = assistant.chat("123 * 456 等于多少？");
-        System.out.println("答: " + answer1);
-        System.out.println();
+         // Demo 2: Date time tool
+         System.out.println("[Demo 2] Trigger date time tool");
+         String answer2 = assistant.chat("What time is it now?");
+         System.out.println("Answer: " + answer2);
+         System.out.println();
 
-        // 演示 2：日期时间工具
-        System.out.println("[演示 2] 触发日期时间工具");
-        String answer2 = assistant.chat("现在几点了？");
-        System.out.println("答: " + answer2);
-        System.out.println();
-
-        // 演示 3：不触发工具（普通对话）
-        System.out.println("[演示 3] 不触发工具（普通对话）");
-        String answer3 = assistant.chat("你好，介绍一下你自己");
-        System.out.println("答: " + answer3);
-        System.out.println();
-
-        // ===== 交互式对话 =====
-        System.out.println("=== 交互式对话 ===");
-        System.out.println("试试以下问题：");
-        System.out.println("  - (15 + 27) * 3 等于多少？（触发计算器）");
-        System.out.println("  - 今天星期几？（触发日期工具）");
-        System.out.println("  - 你好（不触发任何工具）");
-        System.out.println("输入 exit 退出\n");
-
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            System.out.print("你: ");
-            String question = scanner.nextLine().trim();
-            if (question.isEmpty()) continue;
-            if ("exit".equalsIgnoreCase(question)) {
-                System.out.println("再见！");
-                break;
-            }
-            try {
-                String response = assistant.chat(question);
-                System.out.println("助手: " + response);
-                System.out.println();
-            } catch (Exception e) {
-                System.err.println("错误: " + e.getMessage());
-            }
-        }
-        scanner.close();
+         // Demo 3: No tool triggered (normal conversation)
+         System.out.println("[Demo 3] No tool triggered (normal conversation)");
+         String answer3 = assistant.chat("Hello, introduce yourself");
+         System.out.println("Answer: " + answer3);
+         System.out.println();
     }
 
     private static ChatModel createChatModel() {
-        Yaml yaml = new Yaml();
-        InputStream is = ToolDemo.class.getClassLoader()
-                .getResourceAsStream("application.yml");
-        if (is == null) {
-            throw new IllegalStateException("application.yml 未找到");
-        }
-        @SuppressWarnings("unchecked")
-        Map<String, Object> config = yaml.load(is);
+        Map<String, Object> config = loadConfig();
         @SuppressWarnings("unchecked")
         Map<String, Object> llmConfig = (Map<String, Object>) config.get("llm");
         String provider = (String) llmConfig.get("provider");
         @SuppressWarnings("unchecked")
         Map<String, String> providerConfig = (Map<String, String>) llmConfig.get(provider);
 
-        String apiKey = providerConfig.get("api-key");
-        if (apiKey == null || apiKey.contains("your-api-key-here")) {
-            System.err.println("请先配置 API Key！参见 step-00-setup");
-            System.exit(1);
-        }
+         String apiKey = providerConfig.get("api-key");
+         if (apiKey == null || apiKey.contains("your-api-key-here")) {
+             System.err.println("Please configure API Key first! See step-00-setup");
+             System.exit(1);
+         }
 
         return OpenAiChatModel.builder()
                 .baseUrl(providerConfig.get("base-url"))
                 .apiKey(apiKey)
                 .modelName(providerConfig.get("model-name"))
                 .build();
+    }
+
+    private static Map<String, Object> loadConfig() {
+        Yaml yaml = new Yaml();
+        InputStream is = ToolDemo.class.getClassLoader()
+                .getResourceAsStream("application.yml");
+        if (is == null) {
+            throw new IllegalStateException("application.yml not found");
+        }
+        return yaml.load(is);
     }
 }

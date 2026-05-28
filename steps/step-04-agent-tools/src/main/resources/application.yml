@@ -1,14 +1,12 @@
 llm:
-  provider: zhipu
-  zhipu:
-    base-url: https://open.bigmodel.cn/api/paas/v4/
-    api-key: ${LLM_API_KEY:your-api-key-here}
-    model-name: glm-4-flash
+  provider: deepseek
+
   deepseek:
     base-url: https://api.deepseek.com/
-    api-key: ${DEEPSEEK_API_KEY:your-api-key-here}
+    api-key: sk-b7af95c17ba7497687d5477918b38d43
     model-name: deepseek-chat
-  openai:
-    base-url: https://api.openai.com/v1/
-    api-key: ${OPENAI_API_KEY:your-api-key-here}
-    model-name: gpt-4o-mini
+
+  zhipu:
+    base-url: https://open.bigmodel.cn/api/paas/v4/
+    api-key: ca185773e1ce488d95ad25fee97f94c7.X4Hw6MxEIohk4IEp
+    model-name: glm-4-flash
