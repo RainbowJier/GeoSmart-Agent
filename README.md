@@ -2,7 +2,7 @@
 
 Build AI applications from scratch — designed for experienced Java developers.
 
-This project takes you through **10 progressive steps** to master LangChain4j core concepts: LLM calling, streaming
+This project takes you through **9 progressive steps** to master LangChain4j core concepts: LLM calling, streaming
 output, RAG (Retrieval-Augmented Generation), Agent tool calling, session memory, and finally a complete Spring Boot +
 Vue 3 full-stack application.
 
@@ -16,8 +16,8 @@ Setup       Hello LLM   Streaming   RAG         Tools       Memory      Full Ass
   │                                                                       │
   └── Pure Java (no Spring Boot required) ────────────────────────────────┘
                                                                            │
-Step 07 ─── Step 08 ─── Step 09
-Spring Boot  Vue Frontend  Production
+Step 07 ─── Step 08
+Spring Boot  Vue Frontend
   │
   └── Spring Boot + Vue 3 Full Stack ──┘
 ```
@@ -25,7 +25,6 @@ Spring Boot  Vue Frontend  Production
 - **Steps 00–06**: Pure Java, run with `mvn compile exec:java` — no Spring Boot needed
 - **Step 07**: Spring Boot multi-module REST API
 - **Step 08**: Vue 3 frontend with SSE streaming chat
-- **Step 09**: Production-hardening (vector DB, monitoring, security)
 
 ---
 
@@ -45,7 +44,6 @@ walkthroughs, and exercises.
 | [Step 06](LangChain4j-Tutorial-Steps/step-06-full-aiservice/)  | Full AiService          | `AiServices.builder()` integrating all components (RAG + Tools + Memory + Streaming)                 | `mvn compile exec:java` |
 | [Step 07](LangChain4j-Tutorial-Steps/step-07-spring-boot-api/) | Spring Boot API         | Multi-module architecture, `@Bean` declarative assembly, SSE endpoints, document upload              | `mvn spring-boot:run`   |
 | [Step 08](LangChain4j-Tutorial-Steps/step-08-vue-frontend/)    | Vue 3 Frontend          | Composition API, Pinia state management, SSE client, Markdown rendering, Element Plus                | `npm run dev`           |
-| [Step 09](LangChain4j-Tutorial-Steps/step-09-production/)      | Production Optimization | Vector DB migration (Milvus), timeout/retry, circuit breaker, monitoring, security                   | `mvn compile exec:java` |
 
 ### Learning path recommendations
 
@@ -53,7 +51,6 @@ walkthroughs, and exercises.
 |---------------------------------|-----------------------------|----------|
 | **Core concepts** (recommended) | 00 → 01 → 03 → 04 → 05 → 06 | ~2 hours |
 | **Full-stack**                  | Core + 07 + 08              | ~4 hours |
-| **Production**                  | Full-stack + 09             | ~5 hours |
 
 ---
 
@@ -164,8 +161,6 @@ Step 06:  AiServices.builder() — all components assembled
 Step 07:  Spring Boot — @Bean / @Service / @RestController wrapping
             ↓
 Step 08:  Vue 3 — browser chat UI with SSE streaming
-            ↓
-Step 09:  Production — Milvus, monitoring, security
 ```
 
 ### Key Design Principle: Concept Bridge
@@ -227,9 +222,8 @@ LangChain4j-Tutorial-Steps/
 │   ├── smartdoc-tools/              #   Agent tools
 │   ├── smartdoc-chat/               #   AiService assembly
 │   └── smartdoc-api/                #   REST controllers
-├── step-08-vue-frontend/            # Vue 3 frontend
-│   └── frontend/                    #   Vite + Vue 3 + Pinia
-└── step-09-production/              # Production optimizations
+└── step-08-vue-frontend/            # Vue 3 frontend
+    └── frontend/                    #   Vite + Vue 3 + Pinia
 ```
 
 ---
