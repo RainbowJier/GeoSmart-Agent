@@ -11,7 +11,7 @@
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>smartdoc-llm</artifactId>
+    <artifactId>smartdoc-chatModel</artifactId>
     <name>SmartDoc LLM</name>
     <description>LLM 提供商配置 - 对应 Step 06 的 ChatModel 创建代码</description>
 

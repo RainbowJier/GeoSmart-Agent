@@ -26,7 +26,7 @@
         <!-- 依赖 LLM 模块（工具注解来自 langchain4j 核心） -->
         <dependency>
             <groupId>com.smartdoc</groupId>
-            <artifactId>smartdoc-llm</artifactId>
+            <artifactId>smartdoc-chatModel</artifactId>
             <version>${project.version}</version>
         </dependency>
 

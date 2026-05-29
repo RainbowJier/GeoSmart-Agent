@@ -19,7 +19,7 @@
         <!-- 依赖 LLM 模块（获取 EmbeddingModel Bean） -->
         <dependency>
             <groupId>com.smartdoc</groupId>
-            <artifactId>smartdoc-llm</artifactId>
+            <artifactId>smartdoc-chatModel</artifactId>
             <version>${project.version}</version>
         </dependency>
 

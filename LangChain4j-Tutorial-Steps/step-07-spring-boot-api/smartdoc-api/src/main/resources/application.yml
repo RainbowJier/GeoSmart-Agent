@@ -1,13 +1,6 @@
-# ============================================================
-# SmartDoc Agent 配置文件
-# 【Step 06 对照】Step 06 中所有配置都是硬编码的 Java 常量。
-# Spring Boot 方式：所有配置集中在 application.yml，支持环境变量覆盖。
-# ============================================================
-
 server:
   port: 8080
 
-# 文件上传限制
 spring:
   servlet:
     multipart:
@@ -16,20 +9,8 @@ spring:
 
 # ============================================================
 # LLM 配置
-# 【Step 06 对照】Step 06 中直接在代码里写 apiKey 和 modelName。
-# 这里通过配置文件管理，支持多提供商切换。
-#
-# 切换提供商：
-#   方式 1：修改 llm.provider 值
-#   方式 2：设置环境变量 LLM_PROVIDER=deepseek
-#
-# 配置 API Key：
-#   方式 1：直接写在配置文件（不推荐，有安全风险）
-#   方式 2：设置环境变量 ZHIPU_API_KEY=xxx（推荐）
 # ============================================================
 llm:
-  # 当前激活的提供商：zhipu / deepseek / openai
-  # 优先使用环境变量 LLM_PROVIDER，未设置则默认 zhipu
   provider: ${LLM_PROVIDER:zhipu}
 
   # 智谱 AI 配置
@@ -44,19 +25,8 @@ llm:
     api-key: ${DEEPSEEK_API_KEY:}
     model-name: deepseek-chat
 
-  # OpenAI 配置
-  openai:
-    base-url: https://api.openai.com/v1
-    api-key: ${OPENAI_API_KEY:}
-    model-name: gpt-4o
-
 # ============================================================
 # RAG 配置
-# 【Step 06 对照】Step 06 中这些参数硬编码在 Java 代码里：
-#   DocumentSplitters.recursive(500, 100)
-#   EmbeddingStoreContentRetriever.builder().maxResults(5).build()
-#
-# Spring Boot 方式：通过配置文件调整，无需修改代码。
 # ============================================================
 rag:
   # 文档分块大小（字符数）
@@ -68,8 +38,6 @@ rag:
 
 # ============================================================
 # 聊天配置
-# 【Step 06 对照】Step 06 中 ChatMemory 窗口大小硬编码为 20。
-# Spring Boot 方式：通过 chat.max-memory-messages 配置。
 # ============================================================
 chat:
   # 单个会话保留的最大消息数（超出后自动丢弃最早的消息）

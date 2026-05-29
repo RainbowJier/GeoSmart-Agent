@@ -34,7 +34,7 @@
     <!-- 【Step 06 对照】Step 06 没有 Maven，所有 .java 文件手动编译。
          多模块 Maven 让每个模块独立编译、测试、版本管理。 -->
     <modules>
-        <module>smartdoc-llm</module>
+        <module>smartdoc-chatModel</module>
         <module>smartdoc-rag</module>
         <module>smartdoc-tools</module>
         <module>smartdoc-chat</module>
