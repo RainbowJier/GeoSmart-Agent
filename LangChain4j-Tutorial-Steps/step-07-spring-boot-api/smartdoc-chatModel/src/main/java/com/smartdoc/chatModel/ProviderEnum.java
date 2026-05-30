@@ -6,8 +6,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum ProviderEnum {
-    DEEPSEEK("deepsekk"),
-    ZHIPU("zhupu");
+    DEEPSEEK("deepseek"),
+    ZHIPU("zhipu");
 
     private final String code;
 }

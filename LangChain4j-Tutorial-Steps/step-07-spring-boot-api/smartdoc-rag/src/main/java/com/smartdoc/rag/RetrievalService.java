@@ -8,31 +8,19 @@ import dev.langchain4j.store.embedding.EmbeddingStore;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-/**
- * RAG Content retrieval service.
- */
-@Slf4j
 @Getter
-@Service
+@Slf4j
+@Component
 public class RetrievalService {
 
     private final ContentRetriever contentRetriever;
 
-    /**
-     * Maximum number of retrieval result, default 5
-     */
-    @Value("${rag.max-results:5}")
-    private int maxResults;
-
-    /**
-     * construct retrieval service.
-     *
-     * @param store          EmbeddingStore Bean
-     * @param embeddingModel EmbeddingStore Bean
-     */
-    public RetrievalService(EmbeddingStore<TextSegment> store, EmbeddingModel embeddingModel) {
+    public RetrievalService(
+            EmbeddingStore<TextSegment> store,
+            EmbeddingModel embeddingModel,
+            @Value("${rag.max-results:5}") int maxResults) {
         this.contentRetriever = EmbeddingStoreContentRetriever.builder()
                 .embeddingStore(store)
                 .embeddingModel(embeddingModel)
@@ -40,4 +28,5 @@ public class RetrievalService {
                 .build();
         log.info("RetrievalService initialized: maxResults={}", maxResults);
     }
+
 }

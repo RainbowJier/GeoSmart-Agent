@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -62,18 +63,13 @@ public class DocumentController {
      */
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadDocument(@RequestParam("file") MultipartFile file) {
+        Path tempFile = null;
         try {
-            // 将上传文件保存为临时文件
-            Path tempFile = Files.createTempFile("doc-", file.getOriginalFilename());
+            tempFile = Files.createTempFile("doc-", file.getOriginalFilename());
             file.transferTo(tempFile.toFile());
 
-            // 调用摄入服务：解析 → 分块 → 向量化 → 存储
             ingestionService.ingestDocument(tempFile);
 
-            // 处理完成后删除临时文件
-            Files.deleteIfExists(tempFile);
-
-            // 记录已上传文档
             uploadedDocuments.add(file.getOriginalFilename());
             log.info("Uploaded and ingested: {}", file.getOriginalFilename());
 
@@ -85,6 +81,14 @@ public class DocumentController {
             log.error("Failed to upload document", e);
             return ResponseEntity.internalServerError()
                     .body(Map.of("status", "error", "message", e.getMessage()));
+        } finally {
+            if (tempFile != null) {
+                try {
+                    Files.deleteIfExists(tempFile);
+                } catch (IOException e) {
+                    log.warn("Failed to delete temp file: {}", tempFile, e);
+                }
+            }
         }
     }
 

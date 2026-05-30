@@ -11,42 +11,28 @@ import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
-import jakarta.annotation.Resource;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 
-/**
- * Document ingestion service.
- */
 @Slf4j
 @Component
 public class DocumentIngestionService {
 
     private final EmbeddingStoreIngestor ingestor;
 
-    @Resource
-    private EmbeddingModel embeddingModel;
-
-    @Resource
-    private EmbeddingStore<TextSegment> store;
-
-    @Value("${rag.chunk-size:500}")
-    private int chunkSize;
-
-    @Value("${rag.chunk-overlap:100}")
-    private int chunkOverlap;
-
-    public DocumentIngestionService() {
+    public DocumentIngestionService(
+            EmbeddingModel embeddingModel,
+            EmbeddingStore<TextSegment> store,
+            @Value("${rag.chunk-size:500}") int chunkSize,
+            @Value("${rag.chunk-overlap:100}") int chunkOverlap) {
         this.ingestor = EmbeddingStoreIngestor.builder()
                 .embeddingStore(store)
                 .embeddingModel(embeddingModel)
                 .documentSplitter(DocumentSplitters.recursive(chunkSize, chunkOverlap))
                 .build();
-
         log.info("DocumentIngestionService initialized: chunkSize={}, chunkOverlap={}", chunkSize, chunkOverlap);
     }
 

@@ -1,4 +1,4 @@
-package com.smartdoc.rag;
+package com.smartdoc.chatModel;
 
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.embedding.EmbeddingModel;
