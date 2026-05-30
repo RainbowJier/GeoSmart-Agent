@@ -10,7 +10,9 @@ import com.smartdoc.chat.ChatSessionManager;
 import com.smartdoc.chat.DocAssistant;
 import dev.langchain4j.service.TokenStream;
 import jakarta.annotation.PreDestroy;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -24,13 +26,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/chat")
 @RequiredArgsConstructor
 public class ChatController {
-
-    private static final Logger log = LoggerFactory.getLogger(ChatController.class);
-
     private final ExecutorService executor = Executors.newCachedThreadPool();
 
     private final DocAssistant assistant;
@@ -51,13 +51,7 @@ public class ChatController {
     }
 
     @PostMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter chat(@RequestBody ChatReq request) {
-        if (request.message() == null || request.message().isBlank()) {
-            SseEmitter emitter = new SseEmitter();
-            emitter.completeWithError(new IllegalArgumentException("message must not be blank"));
-            return emitter;
-        }
-
+    public SseEmitter chat(@Valid @RequestBody ChatReq request) {
         SseEmitter emitter = new SseEmitter(120_000L);
 
         String sessionId = request.sessionId() != null ? request.sessionId() : "default";
