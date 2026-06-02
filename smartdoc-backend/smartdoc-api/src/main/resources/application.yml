@@ -1,0 +1,70 @@
+server:
+  port: 8080
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+# ============================================================
+# ChatModel
+# Providers map — add any OpenAI-compatible provider here.
+# To add a new provider, just add a new entry under "providers".
+# ============================================================
+llm:
+  provider: ${LLM_PROVIDER:deepseek}
+  providers:
+    zhipu:
+      base-url: https://open.bigmodel.cn/
+      # Set ZHIPU_API_KEY env var, or replace the placeholder below (never commit real keys)
+      api-key: ${ZHIPU_API_KEY:your-zhipu-api-key-here}
+      model-name: glm-5
+      max-tokens: 8192
+    deepseek:
+      base-url: https://api.deepseek.com
+      # Set DEEPSEEK_API_KEY env var, or replace the placeholder below (never commit real keys)
+      api-key: ${DEEPSEEK_API_KEY:your-deepseek-api-key-here}
+      model-name: deepseek-flash
+      max-tokens: 8192
+
+# ============================================================
+# RAG Configuration
+# ============================================================
+rag:
+  # Embedding type: "local" (AllMiniLmL6V2, English-focused) or "zhipu" (remote, Chinese-optimized)
+  embedding:
+    type: ${RAG_EMBEDDING_TYPE:local}
+  # Document chunk size (number of characters)
+  chunk-size: 500
+  # Overlap size
+  chunk-overlap: 100
+  # Max retrieval segments
+  max-results: 5
+  # Document registry file (persists uploaded document names across restarts)
+  document-registry: data/document-registry.txt
+
+# ============================================================
+# Session Configuration
+# ============================================================
+chat:
+  # Max messages per session (older messages are dropped)
+  max-memory-messages: 20
+  # Session timeout in minutes (inactive sessions are evicted automatically)
+  session-timeout-minutes: 30
+  # Eviction check interval in milliseconds (default: 5 minutes)
+  eviction-interval-ms: 300000
+
+# ============================================================
+# CORS Configuration
+# ============================================================
+cors:
+  allowed-origins: http://localhost:5173,http://localhost:3000
+
+# ============================================================
+# Logging Configuration
+# ============================================================
+logging:
+  level:
+    dev.langchain4j: DEBUG
+    com.smartdoc: DEBUG
